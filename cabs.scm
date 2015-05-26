@@ -4,11 +4,19 @@
   (list (make-command "help"
                       perform-help
                       (make-documentation "help"
-                                          "displays this message"))
+                                          "display this message"))
         (make-command "add"
                       perform-add
                       (make-documentation "add [FILE]"
-                                          "adds a blob from FILE or stdin"))))
+                                          "add a blob from FILE or stdin"))
+        (make-command "check"
+                      perform-check
+                      (make-documentation "check HASH"
+                                          "check if a blob exists for HASH"))
+        (make-command "get"
+                      perform-get
+                      (make-documentation "get HASH"
+                                          "get path to blob of HASH"))))
 
 (define (name->command-implementation name)
   (let ((command (find (lambda (command)

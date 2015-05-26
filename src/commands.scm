@@ -17,3 +17,15 @@
     (for-each (lambda (source) (print (add-blob (read-all source))))
               sources)
     (print (add-blob (read-all (current-input-port))))))
+
+(define (perform-get hashes)
+  (if (not (null-list? hashes))
+    (for-each (lambda (hash) (print (get-blob hash)))
+              hashes)
+    (print #f)))
+
+(define (perform-check hashes)
+  (if (not (null-list? hashes))
+    (for-each (lambda (hash) (print (blob-exists? hash)))
+              hashes)
+    (print #f)))

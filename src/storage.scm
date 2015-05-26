@@ -19,7 +19,7 @@
     (file-close fileno)))
 
 (define (identifier-exists? branch node)
-  (file-exists? (identifier->path branch node)))
+  (regular-file? (identifier->path branch node)))
 
 ;; blob identifier
 
