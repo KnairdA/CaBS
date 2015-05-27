@@ -4,7 +4,7 @@
 (define-record documentation arguments description)
 (define-record command       name implementation documentation)
 
-(define (perform-help arguments)
+(define (perform-help)
   (let ((printer (make-kv-printer 0 30)))
     (for-each print (map (lambda (command)
                           (let ((documentation (command-documentation command)))
@@ -29,7 +29,10 @@
     (exit 1)
     (exit (boolean->exit (every blob-exists? hashes)))))
 
-(define (perform-validate locations)
+(define (perform-digest)
+  (print (get-storage-digest)))
+
+(define (perform-validate)
   (let ((invalid-nodes (concatenate (map get-invalid-nodes (get-branches)))))
     (if (= 0 (length invalid-nodes))
       (exit 0)

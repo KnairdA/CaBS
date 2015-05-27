@@ -77,3 +77,13 @@
             (equal? (blob->hash (read-all (conc branch "/" node)))
                     (conc branch node)))
           (get-nodes branch)))
+
+(define (get-storage)
+  (concatenate (map (lambda (branch) (map (lambda (node) (conc branch node))
+                                          (get-nodes branch)))
+                    (get-branches))))
+
+(define (get-storage-digest)
+  (blob->hash (fold conc
+                    (string)
+                    (sort (get-storage) string<?))))

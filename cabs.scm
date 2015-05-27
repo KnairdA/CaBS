@@ -17,6 +17,10 @@
                       perform-get
                       (make-documentation "get HASH"
                                           "get path to blob of HASH"))
+        (make-command "digest"
+                      perform-digest
+                      (make-documentation "digest"
+                                          "get hash of all blob hashes"))
         (make-command "validate"
                       perform-validate
                       (make-documentation "validate"
@@ -29,8 +33,8 @@
     (command-implementation command)))
 
 (define (perform-operation arguments)
-  (if (null-list? arguments)
-    ((name->command-implementation "help")          (list))
-    ((name->command-implementation (car arguments)) (cdr arguments))))
+  (cond ((null-list? arguments)   ((name->command-implementation "help")))
+        ((= 1 (length arguments)) ((name->command-implementation (car arguments))))
+        (else ((name->command-implementation (car arguments)) (cdr arguments)))))
 
 (perform-operation (command-line-arguments))
