@@ -28,3 +28,10 @@
   (if (null-list? hashes)
     (exit 1)
     (exit (boolean->exit (every blob-exists? hashes)))))
+
+(define (perform-validate locations)
+  (let ((invalid-nodes (concatenate (map get-invalid-nodes (get-branches)))))
+    (if (= 0 (length invalid-nodes))
+      (exit 0)
+      (begin (for-each print invalid-nodes)
+             (exit 1)))))

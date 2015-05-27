@@ -16,7 +16,11 @@
         (make-command "get"
                       perform-get
                       (make-documentation "get HASH"
-                                          "get path to blob of HASH"))))
+                                          "get path to blob of HASH"))
+        (make-command "validate"
+                      perform-validate
+                      (make-documentation "validate"
+                                          "validate storage integrity"))))
 
 (define (name->command-implementation name)
   (let ((command (find (lambda (command)

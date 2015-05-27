@@ -4,7 +4,9 @@
      message-digest
      sha2)
 
+(define hash-length   (* 2 (message-digest-primitive-digest-length (sha256-primitive))))
 (define branch-length 2)
+(define node-length   (- hash-length branch-length))
 
 ;; hash io
 
@@ -57,3 +59,21 @@
     (if (identifier-exists? branch node)
       (delete-file (identifier->path branch node)))
     (identifier-exists? branch node)))
+
+;; storage
+
+(define (get-branches)
+  (filter (lambda (candidate) (and (directory? candidate)
+                                   (= branch-length (string-length candidate))))
+          (directory)))
+
+(define (get-nodes branch)
+  (filter (lambda (candidate) (and (regular-file? (conc branch "/" candidate))
+                                   (= node-length (string-length candidate))))
+          (directory branch)))
+
+(define (get-invalid-nodes branch)
+  (remove (lambda (node)
+            (equal? (blob->hash (read-all (conc branch "/" node)))
+                    (conc branch node)))
+          (get-nodes branch)))
