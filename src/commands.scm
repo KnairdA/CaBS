@@ -42,6 +42,11 @@
                            (make-directory-reader (current-directory))))))
       (exit (boolean->exit (every string? (map blob-reader hashes)))))))
 
+(define (perform-ls-blobs)
+  (for-each print
+            (tree->hashes (get-storage-tree
+                            (make-directory-reader (current-directory))))))
+
 (define (perform-digest)
   (print (get-storage-digest (make-directory-reader (current-directory)))))
 

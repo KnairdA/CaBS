@@ -17,6 +17,10 @@
                       perform-get
                       (make-documentation "get HASH"
                                           "get path to blob of HASH"))
+        (make-command "ls-blobs"
+                      perform-ls-blobs
+                      (make-documentation "ls-blobs"
+                                          "list all blob hashes"))
         (make-command "digest"
                       perform-digest
                       (make-documentation "digest"
