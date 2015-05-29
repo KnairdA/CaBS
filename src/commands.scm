@@ -51,7 +51,7 @@
          (identifier-reader (make-identifier-reader directory-reader))
          (blob-reader       (make-blob-reader       identifier-reader))
          (invalid-nodes     (get-invalid-nodes directory-reader blob-reader)))
-    (if (= 0 (length invalid-nodes))
+    (if (null? invalid-nodes)
       (exit 0)
       (begin (for-each print invalid-nodes)
              (exit 1)))))

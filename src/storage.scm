@@ -1,6 +1,7 @@
 (use srfi-1
      utils
      posix
+     filepath
      message-digest
      sha2)
 
@@ -17,14 +18,14 @@
 
 (define (make-file-writer context)
   (lambda (path content)
-    (let ((fileno (file-open (conc context "/" path)
+    (let ((fileno (file-open (filepath:combine context path)
                              (+ open/wronly open/creat))))
       (file-write fileno content)
       (file-close fileno))))
 
 (define (make-directory-reader context)
   (lambda (path)
-    (let ((full-path (conc context "/" path)))
+    (let ((full-path (filepath:combine context path)))
       (cond ((regular-file? full-path) full-path)
             ((directory?    full-path) (directory full-path))
             (else                      #f)))))
@@ -39,9 +40,8 @@
                      (list->string (drop hash branch-length)))))
 
 (define (identifier->path identifier)
-  (conc (identifier-branch identifier)
-        "/"
-        (identifier-node identifier)))
+  (filepath:combine (identifier-branch identifier)
+                    (identifier-node identifier)))
 
 (define (make-identifier-reader directory-reader)
   (lambda (identifier)
