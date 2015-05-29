@@ -4,6 +4,10 @@
 (define-record documentation arguments description)
 (define-record command       name implementation documentation)
 
+(define (perform-unrecognized-command command)
+  (print "CaBS: '" command "' is not a CaBS command. See 'cabs help'.")
+  (exit 1))
+
 (define (perform-help)
   (let ((printer (make-kv-printer 0 30)))
     (for-each print (map (lambda (command)

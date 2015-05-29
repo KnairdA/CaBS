@@ -34,7 +34,9 @@
   (let ((command (find (lambda (command)
                          (string=? name (command-name command)))
                        commands)))
-    (command-implementation command)))
+    (if (not command)
+      (perform-unrecognized-command name)
+      (command-implementation command))))
 
 (define (perform-operation arguments)
   (cond ((null-list? arguments)   ((name->command-implementation "help")))
