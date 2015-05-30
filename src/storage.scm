@@ -18,10 +18,11 @@
 
 (define (make-file-writer context)
   (lambda (path content)
-    (let ((fileno (file-open (filepath:combine context path)
-                             (+ open/wronly open/creat))))
-      (file-write fileno content)
-      (file-close fileno))))
+    (let ((full-path (filepath:combine context path)))
+      (create-directory (filepath:drop-file-name full-path) #t)
+      (let ((fileno (file-open full-path (+ open/wronly open/creat))))
+        (file-write fileno content)
+        (file-close fileno)))))
 
 (define (make-directory-reader context)
   (lambda (path)
@@ -62,9 +63,8 @@
     (let* ((hash       (blob->hash source))
            (identifier (hash->identifier hash)))
       (if (not (identifier-reader identifier))
-        (begin (create-directory (identifier-branch identifier))
-               (file-writer (identifier->path identifier)
-                            source)))
+        (file-writer (identifier->path identifier)
+                     source))
       (identifier-reader identifier))))
 
 ;; storage

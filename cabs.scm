@@ -17,6 +17,10 @@
                       perform-get
                       (make-documentation "get HASH"
                                           "get path to blob of HASH"))
+        (make-command "synchronize"
+                      perform-synchronize
+                      (make-documentation "synchronize PATH"
+                                          "synchronize storage with storage at PATH"))
         (make-command "ls-blobs"
                       perform-ls-blobs
                       (make-documentation "ls-blobs"

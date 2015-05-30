@@ -1,5 +1,6 @@
-(include "src/utility")
+(include "src/utility.scm")
 (include "src/storage.scm")
+(include "src/synchronize.scm")
 
 (define-record documentation arguments description)
 (define-record command       name implementation documentation)
@@ -63,3 +64,8 @@
       (exit 0)
       (begin (for-each print invalid-nodes)
              (exit 1)))))
+
+(define (perform-synchronize #!optional paths)
+  (if (not paths)
+    (exit 1)
+    (synchronize (append (list (current-directory)) paths))))
