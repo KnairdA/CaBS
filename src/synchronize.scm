@@ -1,4 +1,5 @@
 (include "src/storage.scm")
+(include "src/utility.scm")
 
 (define-record storage-accessor reader writer)
 
@@ -37,32 +38,27 @@
        superset-of-storage-hash-sets))
 
 (define (synchronize paths)
-  (let* ((storage-accessors             (map path->storage-accessor paths))
-         (storage-hash-sets             (get-storage-hash-sets storage-accessors))
-         (superset-of-storage-hash-sets (get-superset-of-storage-hash-sets
-                                          storage-hash-sets))
-         (storage-missing-hash-sets     (get-storage-missing-hash-sets
-                                          storage-hash-sets
-                                          superset-of-storage-hash-sets))
-         (superset-storage-accessor-map (get-superset-storage-accessor-map
-                                          superset-of-storage-hash-sets
-                                          storage-hash-sets)))
+  (let* ((storage-hash-sets             (get-storage-hash-sets (map path->storage-accessor paths)))
+         (superset-of-storage-hash-sets (get-superset-of-storage-hash-sets storage-hash-sets))
+         (superset-storage-accessor-map (make-map-accessor (get-superset-storage-accessor-map
+                                                             superset-of-storage-hash-sets
+                                                             storage-hash-sets))))
     (for-each
       (lambda (storage-missing-hash-set)
         (let* ((target-storage-accessor  (car storage-missing-hash-set))
-               (target-directory-reader  (storage-accessor-reader target-storage-accessor))
-               (target-identifier-reader (make-identifier-reader target-directory-reader))
-               (target-file-writer       (storage-accessor-writer target-storage-accessor))
-               (target-blob-writer       (make-blob-writer target-file-writer
-                                                           target-identifier-reader)))
+               (target-identifier-reader (make-identifier-reader
+                                           (storage-accessor-reader target-storage-accessor)))
+               (target-blob-writer       (make-blob-writer
+                                           (storage-accessor-writer target-storage-accessor)
+                                           target-identifier-reader)))
           (for-each
             (lambda (missing-hash)
-              (let* ((source-storage-accessor  (cdr (assoc missing-hash
-                                                           superset-storage-accessor-map)))
+              (let* ((source-storage-accessor  (superset-storage-accessor-map missing-hash))
                      (source-directory-reader  (storage-accessor-reader source-storage-accessor))
                      (source-identifier-reader (make-identifier-reader source-directory-reader))
                      (source-blob-reader       (make-blob-reader source-identifier-reader)))
                 (target-blob-writer
                   (read-all (source-directory-reader (source-blob-reader missing-hash))))))
             (cdr storage-missing-hash-set))))
-      storage-missing-hash-sets)))
+      (get-storage-missing-hash-sets storage-hash-sets
+                                     superset-of-storage-hash-sets))))
