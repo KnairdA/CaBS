@@ -19,9 +19,8 @@
 
 (define (perform-add #!optional sources)
   (let ((blob-writer (make-blob-writer
-                       (make-file-writer (current-directory))
-                       (make-identifier-reader (make-directory-reader
-                                                 (current-directory))))))
+                       (make-file-writer      (current-directory))
+                       (make-directory-reader (current-directory)))))
     (if (not sources)
       (print (blob-writer (read-all (current-input-port))))
       (for-each (lambda (source) (print (blob-writer (read-all source))))
@@ -30,11 +29,8 @@
 (define (perform-get #!optional hashes)
   (if (not hashes)
     (exit 1)
-    (let* ((blob-reader (make-blob-reader
-                          (make-identifier-reader
-                            (make-directory-reader (current-directory)))))
-           (paths       (delete #f
-                                (map blob-reader hashes))))
+    (let* ((blob-reader (make-blob-reader (make-directory-reader (current-directory))))
+           (paths       (delete #f (map blob-reader hashes))))
       (for-each print paths)
       (exit (boolean->exit (= (length paths)
                               (length hashes)))))))
@@ -42,9 +38,7 @@
 (define (perform-check #!optional hashes)
   (if (not hashes)
     (exit 1)
-    (let ((blob-reader (make-blob-reader
-                         (make-identifier-reader
-                           (make-directory-reader (current-directory))))))
+    (let ((blob-reader (make-blob-reader (make-directory-reader (current-directory)))))
       (exit (boolean->exit (every string? (map blob-reader hashes)))))))
 
 (define (perform-ls-blobs)

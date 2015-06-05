@@ -54,14 +54,15 @@
 
 ;; blob
 
-(define (make-blob-reader identifier-reader)
+(define (make-blob-reader directory-reader)
   (lambda (hash)
-    (identifier-reader (hash->identifier hash))))
+    ((make-identifier-reader directory-reader) (hash->identifier hash))))
 
-(define (make-blob-writer file-writer identifier-reader)
+(define (make-blob-writer file-writer directory-reader)
   (lambda (source)
-    (let* ((hash       (blob->hash source))
-           (identifier (hash->identifier hash)))
+    (let* ((identifier-reader (make-identifier-reader directory-reader))
+           (hash              (blob->hash source))
+           (identifier        (hash->identifier hash)))
       (if (not (identifier-reader identifier))
         (file-writer (identifier->path identifier)
                      source))
@@ -92,8 +93,10 @@
                     hash))
           (tree->hashes (get-storage-tree directory-reader))))
 
-(define (get-storage-digest directory-reader)
+(define (get-digest hashes)
   (blob->hash (fold conc
                     (string)
-                    (sort (tree->hashes (get-storage-tree directory-reader))
-                          string<?))))
+                    (sort hashes string<?))))
+
+(define (get-storage-digest directory-reader)
+  (get-digest (tree->hashes (get-storage-tree directory-reader))))
